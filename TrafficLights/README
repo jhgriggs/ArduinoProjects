@@ -1,0 +1,3 @@
+TrafficLights
+
+This project uses the DigitalLed library that I wrote to handle digital LED output to the Arduino Uno. You can download this from my ArduinoLibrary repository.
