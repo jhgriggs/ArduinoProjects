@@ -1,5 +1,6 @@
 /**
  * TrafficLights.ino
+ *
  * This program is a simple simulation of automatic
  * traffic lights. The pedestrian lights are controlled
  * by the timers of the vehicle lights.
@@ -10,19 +11,25 @@
  * "walk" light corresponds to a green LED, and that the 
  * "blinking warning" and "don't walk" lights use a red LED. 
  *
+ * This program uses the DigitalLed library, which can be 
+ * downloaded from the jhgriggs/ArduinoLibraries repository.
+ *
+ * See the corresponding TrafficLights.fzz Fritzing file for
+ * the breadboard layout and schematic.
+ *
  * @author Janette H. Griggs
- * @version 1.0 03/23/14
+ * @version 1.0 03/28/14
  */
 
 #include <DigitalLed.h>
 #include <TimedDigitalLed.h>
 
-// Led pin numbers for vehicle lights.
+// LED pin numbers for vehicle lights.
 const int RED_PIN = 12;
 const int YELLOW_PIN = 8;
 const int GREEN_PIN = 7;
 
-// Led pin numbers for pedestrian lights.
+// LED pin numbers for pedestrian lights.
 const int WALK_PIN = 2;
 const int WARN_WALK_PIN = 4;
 const int NO_WALK_PIN = WARN_WALK_PIN;
