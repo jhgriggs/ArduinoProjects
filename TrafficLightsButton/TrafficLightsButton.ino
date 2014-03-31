@@ -22,11 +22,10 @@
  * for the breadboard layout and schematic.
  *
  * @author Janette H. Griggs
- * @version 1.2 03/29/14
+ * @version 1.3 03/31/14
  */
 
 #include <DigitalLed.h>
-#include <TimedDigitalLed.h>
 #include <PushButton.h>
 
 // LED pin numbers for vehicle lights.
@@ -56,9 +55,9 @@ const ResistorMode WALK_BUTTON_RESISTOR = PULL_UP;
 const unsigned long WALK_BUTTON_DEBOUNCE = 50L;
 
 // Create vehicle traffic lights.
-TimedDigitalLed redLed(RED_PIN, RED_DURATION); // red
-TimedDigitalLed yellowLed(YELLOW_PIN, YELLOW_DURATION); // yellow
-TimedDigitalLed greenLed(GREEN_PIN, GREEN_DURATION); // green
+DigitalLed redLed(RED_PIN); // red
+DigitalLed yellowLed(YELLOW_PIN); // yellow
+DigitalLed greenLed(GREEN_PIN); // green
 
 // Create pedestrian traffic lights.
 DigitalLed walkLed(WALK_PIN); // walk
@@ -69,7 +68,7 @@ PushButton walkButton(WALK_BUTTON_PIN, WALK_BUTTON_RESISTOR,
                       WALK_BUTTON_DEBOUNCE);
 
 // Create other variables.
-TimedDigitalLed* pVehicleLed; // current vehicle light pointer
+DigitalLed* pVehicleLed; // current vehicle light pointer
 DigitalLed* pPedestrianLed; // current pedestrian light pointer
 unsigned long previousMillis; // previous time
 unsigned long deltaMillis; // change in time
@@ -105,7 +104,7 @@ void loop() {
   if (walkRequested) {
     if (pVehicleLed == &greenLed && 
         pVehicleLed->getActiveTimer() >=
-        (pVehicleLed->getActiveDuration() / 3)) {
+        (GREEN_DURATION / 3)) {
       pVehicleLed->resetLed();
       pVehicleLed = &yellowLed;
     } else if (pVehicleLed == &redLed) {
@@ -121,10 +120,10 @@ void loop() {
     // Activate the pedestrian light (don't walk).
     pPedestrianLed->runSteadyLed(deltaMillis);
     
-    // If the vehicle light (green) is no longer active,
-    // reset it.
+    // If the vehicle light (green) has been active
+    // at least its duration, reset it.
     // Set the vehicle light to yellow.
-    if (!(pVehicleLed->getIsActiveState())) {
+    if (pVehicleLed->getActiveTimer() >= GREEN_DURATION) {
       pVehicleLed->resetLed();    
       pVehicleLed = &yellowLed;
     }  
@@ -132,11 +131,12 @@ void loop() {
     // Activate the vehicle light (yellow).
     pVehicleLed->runSteadyLed(deltaMillis);
     
-    // If the vehicle light (yellow) is no longer active,
-    // reset it and the pedestrian light (don't walk).
+    // If the vehicle light (yellow) has been active for
+    // at least its duration, reset it and the pedestrian
+    // light (don't walk).
     // Set the vehicle light to red.
     // Set the pedestrian light to walk.
-    if (!(pVehicleLed->getIsActiveState())) {
+    if (pVehicleLed->getActiveTimer() >= YELLOW_DURATION) {
       pVehicleLed->resetLed();
       pPedestrianLed->resetLed();     
       pVehicleLed = &redLed;
@@ -150,7 +150,7 @@ void loop() {
     // duration, change the pedestrian light to don't walk.
     if ((pPedestrianLed == &walkLed) && 
           pVehicleLed->getActiveTimer() >=
-          (pVehicleLed->getActiveDuration() / 2)) {
+          (RED_DURATION / 2)) {
       pPedestrianLed->resetLed();
       pPedestrianLed = &noWalkLed;
     }
@@ -159,13 +159,15 @@ void loop() {
       // Activate the pedestrian light (walk).
       pPedestrianLed->runSteadyLed(deltaMillis);
     } else {
-      // Activate the pedestrian light (don't walk) with blinking warning.
-      pPedestrianLed->runBlinkingLed(deltaMillis, WARNING_BLINK_INTERVAL); 
+      // Activate the pedestrian light (don't walk) with 
+      // blinking warning.
+      pPedestrianLed->runBlinkingLed(deltaMillis, 
+                                      WARNING_BLINK_INTERVAL); 
     }
     
-    // If the vehicle light (red) is no longer active,
-    // reset it. Set the vehicle light to green.
-    if (!(pVehicleLed->getIsActiveState())) {
+    // If the vehicle light (red) has been active for at least
+    // its duration, reset it. Set the vehicle light to green.
+    if (pVehicleLed->getActiveTimer() >= RED_DURATION) {
       pVehicleLed->resetLed(); 
       pVehicleLed = &greenLed;
     }
