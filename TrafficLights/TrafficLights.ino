@@ -104,13 +104,13 @@ void loop() {
   }
   
   // Activate the vehicle light.
-  vehicleLed.runSteadyLed(deltaMillis);
+  vehicleLed.showSteadyLed(deltaMillis);
   
   // Cycle through the vehicle and pedestrian lights
   // based on the vehicle lights' timers.
   if (vehicleLed.getLedPinNumber() == GREEN_PIN) { // if green light
     // Activate the pedestrian light (don't walk).
-    pedestrianLed.runSteadyLed(deltaMillis);
+    pedestrianLed.showSteadyLed(deltaMillis);
     
     // If the vehicle light (green) has been active
     // at least its duration, reset it.
@@ -143,11 +143,11 @@ void loop() {
     
     if (pedestrianLed.getLedPinNumber() == WALK_PIN) {
       // Activate the pedestrian light (walk).
-      pedestrianLed.runSteadyLed(deltaMillis);
+      pedestrianLed.showSteadyLed(deltaMillis);
     } else {
       // Activate the pedestrian light (don't walk) with 
       // blinking warning.
-      pedestrianLed.runBlinkingLed(deltaMillis, 
+      pedestrianLed.showBlinkingLed(deltaMillis, 
                                       WARNING_BLINK_INTERVAL); 
     }
     
