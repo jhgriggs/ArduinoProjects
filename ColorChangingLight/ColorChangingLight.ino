@@ -30,7 +30,7 @@ const int GREEN_PIN = 10;
 const int BLUE_PIN = 9;
 const ResistorMode BUTTON_RESISTOR = PULL_UP;
 const int BUTTON_PIN = 2;
-unsigned long BUTTON_DEBOUNCE = 50L;
+const unsigned long BUTTON_DEBOUNCE = 50L;
 
 byte redBrightness = MAX_BRIGHTNESS;
 byte greenBrightness = MAX_BRIGHTNESS;
