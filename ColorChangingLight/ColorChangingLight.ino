@@ -2,10 +2,9 @@
  * ColorChangingLight.ino
  *
  * @author Janette H. Griggs
- * @version alpha v1.0 04/08/14
+ * @version alpha v1.1 04/09/14
  */
  
-#include <MemoryFree.h>
 #include <PushButton.h>
 #include <ResistorMode.h>
 #include <AnalogRGBLed.h>
@@ -18,7 +17,7 @@ enum Color {RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA, COLOR_COUNT};
 enum ColorChangeMode {NORMAL, GRADUAL, BLINKING, FADING_IN_OUT, COLOR_CHANGE_MODE_COUNT};
 
 const unsigned long COLOR_CHANGE_INTERVAL = 5000L;
-const unsigned long BLINK_INTERVAL = 1000L;
+const unsigned long BLINK_INTERVAL = 2500L;
 const unsigned long FADE_INTERVAL = 2500L;
 const byte MAX_BRIGHTNESS = 252;
 const byte GRADUAL_CHANGE_STEPS = 3;
@@ -48,7 +47,6 @@ PushButton button(BUTTON_PIN, BUTTON_RESISTOR);
 
 byte color; // color
 byte colorChangeMode; // color change mode
-unsigned long colorChangeTimer; // color change timer
 unsigned long gradualChangeTimer; // gradual change timer
 unsigned long previousMillis; // previous time
 unsigned long deltaMillis; // change in time
@@ -61,12 +59,9 @@ void setup() {
   color = RED;
   
   // Set time variables to 0.
-  colorChangeTimer = 0L;
   gradualChangeTimer = 0L;
   previousMillis = 0L;
   deltaMillis = 0L;
-  
-  Serial.begin(9600);
 }
 
 void loop() {
@@ -75,8 +70,6 @@ void loop() {
   unsigned long currentMillis = millis();
   // Calculate the change in time from the previous loop time.
   deltaMillis = currentMillis - previousMillis; 
-  // Update the color change timer.
-  colorChangeTimer += deltaMillis;
 
   if (button.detectPush(deltaMillis, BUTTON_DEBOUNCE)) {
     colorChangeMode++;
@@ -84,19 +77,18 @@ void loop() {
       colorChangeMode = NORMAL; 
     }
     
-    rgbLed.resetRGBLed();
     color = RED;
-    colorChangeTimer = 0L;
+    rgbLed.resetRGBLed();
     gradualChangeTimer = 0L;
   }
   
-  if (colorChangeTimer >= COLOR_CHANGE_INTERVAL) { 
+  if (/*colorChangeTimer*/ rgbLed.getRGBActiveTimer() >= COLOR_CHANGE_INTERVAL) { 
     color++;
     if (color >= COLOR_COUNT) {
       color = RED; 
     }
     
-    colorChangeTimer = 0L;
+    rgbLed.resetRGBLed();
     gradualChangeTimer = 0L;
   }
   
@@ -106,8 +98,6 @@ void loop() {
   // The current time should now be the previous 
   // time in the next loop.
   previousMillis = currentMillis; 
-  
-  Serial.println(freeMemory());
 }
 
 void setColor() {
